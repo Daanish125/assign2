@@ -1,0 +1,279 @@
+//- worker-progress-report.pug
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Worker Progress Report
+    style.
+      body {
+        font-family: Arial, sans-serif;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background-color: white;
+        border-bottom: 1px solid white;
+      }
+      .logo {
+        width: 100px;
+        margin-top: 0px;
+        display: flex;
+      }
+      .contact-info {
+        flex: 2;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 0;
+        font-family: Arial;
+        margin-left: 20px;
+        margin-top: 0px;
+      }
+      .work-progress {
+        font-weight: bold;
+        font-size: 17px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      .empty-border {
+        width: 750px;
+        height: 75px;
+        border: 2px solid black;
+        box-sizing: border-box;
+        margin: 20px;
+        margin-top: 10px;
+      }
+      .border-box {
+        border: 2px solid black;
+        padding: 10px 15px;
+        width: 95%;
+        max-width: 900px;
+        box-sizing: border-box;
+        font-family: serif;
+        margin-left: 20px;
+        margin-top: 20px;
+      }
+      /* (All other CSS styles from the original remain here) */
+      @media print {
+        body {
+          font-size: 12pt;
+        }
+        .page-break {
+          page-break-after: always;
+        }
+        footer {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+        }
+      }
+
+  body
+    //- Mixin for checkbox items
+    mixin checkbox-item(name, value, label, checked=false)
+      label.checkbox-item
+        input(type="checkbox", name=name, value=value, checked=checked)
+        span= label
+
+    //- Mixin for date input
+    mixin date-input(labelText)
+      .date-column
+        input.date-input(type="date")
+        .date-label= labelText
+
+    //- Header section
+    header
+      .logo
+        img(src="/images/WCB_of_Manitoba_logo.svg.png", alt="Logo", width="100")
+      .contact-info
+        | 333 Broadway
+        br
+        | Winnipeg, MB R3C 4W3
+        br
+        | Phone: (204) 954-4321
+        br
+        | Toll Free: 1-855-954-4321
+        br
+        a(href="https://wcb.mb.ca", target="_blank") wcb.mb.ca
+      .work-progress
+        | Worker Progress Report
+        br
+        p(style="border: 2px solid black; padding: 10px; display: inline-block; margin-top: 5px;") Claim No. #{claimData.claimNumber}
+        p(style="border: 2px solid black; padding: 10px; display: inline-block; margin-top: 5px;") #{claimData.claimType}
+
+    form
+      p(style="margin-left: 20px;") #{workerName} provided the following updates in relation to their claim
+      p(style="font-weight: bold; margin-left: 20px;") Return to Work
+
+      //- Work status section
+      .empty-border
+        .label Select one:
+        .checkbox-options
+          +checkbox-item("workStatus", "noMissedTime", "I have not missed\ntime from work", claimData.workStatus === 'noMissedTime')
+          +checkbox-item("workStatus", "notReturned", "I have not returned\nto work", claimData.workStatus === 'notReturned')
+          label.checkbox-item
+            input(type="checkbox", name="workStatus", value="returned", checked=claimData.workStatus === 'returned')
+            | I returned to work on:
+            +date-input("Date")
+
+      //- Working conditions section
+      .border-box
+        .label I am working:
+        .checkbox-options
+          +checkbox-item("workingCondition", "fullDutiesRegular", "Full duties, regular\nhours", claimData.workingCondition === 'fullDutiesRegular')
+          +checkbox-item("workingCondition", "fullDutiesReduced", "Full duties, reduced\nhours", claimData.workingCondition === 'fullDutiesReduced')
+          +checkbox-item("workingCondition", "modifiedDutiesRegular", "Modified duties,\nregular hours", claimData.workingCondition === 'modifiedDutiesRegular')
+          +checkbox-item("workingCondition", "modifiedDutiesReduced", "Modified duties,\nreduced hours", claimData.workingCondition === 'modifiedDutiesReduced')
+          label.checkbox-item
+            input(type="checkbox", name="workingCondition", value="other", checked=claimData.workingCondition === 'other')
+            | Other:
+            input.other-input(type="text", value=claimData.workingConditionOther)
+
+      //- Return to work experience
+      .border-box
+        div My Return to work is going:
+        div(style="margin-top: 5px; color: rgb(28, 54, 127);") #{claimData.returnToWorkExperience}
+
+      //- Expected return date
+      div(style="margin-left: 25px; margin-top: 10px;") I expect to return to work on:
+      hr(style="width: 20%; margin-left: 300px; border: 1px solid black; margin-bottom: 0px;")
+      div(style="font-size: small; text-align: center; margin-top: 0px;") Date
+
+      //- Concerns about returning to work
+      div(style="width: 750px; height: 100px; border: 2px solid black; margin: 20px auto; margin-left: 20px; margin-top: 10px; margin-bottom: 5px;")
+        div I have the following concerns about returning to work:
+        div(style="color: rgb(28, 54, 127);") #{claimData.returnConcerns}
+
+      div(style="margin-left: 20px; margin-top: 0px; margin-bottom: 10px;") I was most recently in contact with:
+      div(style="font-weight: bold; margin-left: 20px;") Recovery
+
+      //- Recovery status
+      .recovery-box
+        label.question Select one:
+        .options
+          +checkbox-item("recoveryStatus", "notRecovered", "I have not fully recovered from my workplace injury.", claimData.recoveryStatus === 'notRecovered')
+          +checkbox-item("recoveryStatus", "fullyRecovered", "I have fully recovered from my workplace injury.", claimData.recoveryStatus === 'fullyRecovered')
+
+      //- Recovery comments
+      .comments-section
+        label I have provided the following comments about my recovery:
+        .comment-box #{claimData.recoveryComments}
+
+      //- Footer for page 1
+      .footer
+        span Worker App ID: #{workerAppId}
+        .footer-right
+          span Submitted: #{submissionDate}
+          br
+          span Page 1 of 3
+
+      //- Page break for printing
+      .page-break
+
+      //- Pain scale section
+      div(style="background-color: black; height: 20px; margin-top: 30px;")
+      .pain-scale
+        label.pain-label
+          | I rate my current pain/discomfort on a scale of 1–10,
+          br
+          | where 1 is no pain and 10 is severe pain out of 10.
+        .pain-options
+          - for (let i = 1; i <= 10; i++)
+            label
+              input(type="checkbox", checked=claimData.painLevel === i)
+              | #{i}
+
+      //- Treatment section
+      .treatment-box
+        label.question Select one:
+        .treatment-options
+          +checkbox-item("treatmentStatus", "noTreatment", "I am not continuing to receive medical treatment for my workplace injury.", claimData.treatmentStatus === 'noTreatment')
+          label.option
+            input(type="checkbox", name="treatmentStatus", value="receivingTreatment", checked=claimData.treatmentStatus === 'receivingTreatment')
+            span
+              | I am continuing to receive medical treatment for my workplace injury from:
+              div.underline-input #{claimData.treatmentProviderType}
+
+      //- Treatment details
+      .treatment-info
+        .line
+          span My last medical treatment was
+          div.underline #{claimData.lastTreatmentDate}
+          span from
+          div.underline #{claimData.lastTreatmentProvider}
+        .line
+          span My next medical treatment is
+          div.underline #{claimData.nextTreatmentDate}
+          span from
+          div.underline #{claimData.nextTreatmentProvider}
+        .line
+          span I am attending a Chiropractor or Physiotherapist
+          div.underline #{claimData.therapyFrequency}
+
+      //- Medication section
+      .section-box
+        p Select one:
+        +checkbox-item("medicationStatus", "noMedication", "I am not taking medication for my workplace injury.", claimData.medicationStatus === 'noMedication')
+        label
+          input(type="checkbox", name="medicationStatus", value="takingMedication", checked=claimData.medicationStatus === 'takingMedication')
+          | I am taking medication for my workplace injury:
+          div.underline #{claimData.medicationName}
+
+      //- Home exercises section
+      .section-box
+        p Select one:
+        +checkbox-item("exerciseStatus", "noExercises", "I am not doing home exercises for my workplace injury.", claimData.exerciseStatus === 'noExercises')
+        +checkbox-item("exerciseStatus", "doingExercises", "I am doing home exercises for my workplace injury.", claimData.exerciseStatus === 'doingExercises')
+
+      //- Exercises list
+      .exercise-box
+        label List the exercises you are doing:
+        textarea(rows="4") #{claimData.exercisesList}
+
+      //- Other information
+      .section-heading
+        strong Other Information
+      .info-box
+        p I would like to provide the following additional information about my claim/injury:
+        a(href="#") #{claimData.additionalInfo}
+
+      //- Footer for page 2
+      .footer
+        span Worker App ID: #{workerAppId}
+        .right
+          span Submitted: #{submissionDate}
+          br
+          span Page 2 of 3
+
+      //- Page break for printing
+      .page-break
+
+      //- Certification section
+      div(style="background-color: black; height: 20px; margin-top: 40px;")
+      .checkbox-section
+        label
+          input(type="checkbox", checked=claimData.certification)
+          span
+            | I certify that the information given on this form is true, correct and complete to the best of my knowledge. 
+            | I agree to notify the Workers Compensation Board of Manitoba (WCB) immediately once I return to any form of work and/or employment. 
+            | I understand that it is an offence to knowingly make a false statement to the WCB. 
+            | I also understand that it is an offence to withhold information from WCB which affects my entitlement to compensation 
+            | (e.g., full or partial recovery from injury, ability to return to work, sources of additional income, etc.). 
+            | I understand that refusing to co-operate with, or follow my treatment, may result in the WCB reducing or suspending my benefits.
+
+      .checkbox-section
+        label
+          input(type="checkbox", checked=claimData.privacyAcknowledged)
+          span
+            | I understand that the 
+            a(href="#") Privacy Notice
+            |  applies to the personal information collected in this document.
+
+    //- Footer for page 3
+    footer(style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: white; border-top: 1px solid white; font-size: 14px; margin-top: 500px;")
+      div(style="margin-bottom: 20px;") Worker App ID: #{workerAppId}
+      div(style="text-align: right; line-height: 3px;")
+        | Submitted: #{submissionDate}
+        p page 3 of 3
