@@ -1,3 +1,8 @@
+HERE IS THE VIDEO LINK: https://www.loom.com/share/42c0257781c04021a67a2341db5fffca?sid=af710b73-43bb-41cd-925b-8c79199426f3
+
+
+
+
 # Worker Progress Report System
 
 ![WCB Manitoba Logo](public/images/WCB_of_Manitoba_logo.svg.png)
